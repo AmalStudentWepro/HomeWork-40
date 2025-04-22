@@ -40,7 +40,10 @@ function renderFavorites() {
         let productElement = document.createElement("div");
         productElement.classList.add("elem");
 
-        let displayName = product.title.split(" ")[0] || "Default Name";
+        let displayName = typeof product.title === "string" && product.title.trim() !== ""
+            ? product.title.split(" ")[0]
+            : "Товар";
+
         productElement.innerHTML = `
             <div class="elem__box">
                 <img src="${product.image}" alt="${displayName}" />
@@ -52,6 +55,9 @@ function renderFavorites() {
                 <span>${product.quantity}</span>
                 <button class="increase" data-id="${product.id}">+</button>
             </div>
+            <div style="text-align: right; margin-top: 5px;">
+                <button class="delete" data-id="${product.id}" style="background:none;border:none;font-size:18px;cursor:pointer;">🗑️</button>
+            </div>
         `;
         favoriteList.appendChild(productElement);
 
@@ -61,6 +67,12 @@ function renderFavorites() {
 
         productElement.querySelector(".decrease").addEventListener("click", () => {
             changeQuantity(product.id, -1);
+        });
+
+        productElement.querySelector(".delete").addEventListener("click", () => {
+            favorites = favorites.filter(fav => fav.id !== product.id);
+            localStorage.setItem("favorites", JSON.stringify(favorites));
+            renderFavorites();
         });
     });
 
